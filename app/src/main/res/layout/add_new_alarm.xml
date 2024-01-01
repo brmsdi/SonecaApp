@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/dialogColor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:paddingBottom="10dp">
+
+        <ImageView
+            android:id="@+id/image_id"
+            style="@style/styleIcon"
+            android:contentDescription="@string/baseline_notification_add_icon"
+            android:src="@drawable/baseline_notification_add_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_label_title"
+            style="@style/styleLabelForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image_id" />
+
+        <EditText
+            android:id="@+id/edit_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/label_title"
+            android:inputType="text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_label_title" />
+
+        <TextView
+            android:id="@+id/text_label_distance"
+            style="@style/styleLabelForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_distance"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_description" />
+
+        <Spinner
+            android:id="@+id/spinner_distance"
+            style="@style/styleSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_label_distance" />
+
+        <TextView
+            android:id="@+id/text_label_calendar"
+            style="@style/styleLabelForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_day_of_week"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_distance" />
+
+        <ToggleButton
+            android:id="@+id/day_of_week_sunday"
+            style="@style/toggleDaysOfWeek"
+            android:textColor="@color/crimson"
+            android:textOff="@string/first_letter_sunday"
+            android:textOn="@string/first_letter_sunday"
+            app:layout_constraintEnd_toStartOf="@id/day_of_week_monday"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_label_calendar" />
+
+        <ToggleButton
+            android:id="@+id/day_of_week_monday"
+            style="@style/toggleDaysOfWeek"
+            android:textOff="@string/first_letter_monday"
+            android:textOn="@string/first_letter_monday"
+            app:layout_constraintEnd_toStartOf="@+id/day_of_week_tuesday"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/day_of_week_sunday"
+            app:layout_constraintTop_toBottomOf="@id/text_label_calendar" />
+
+        <ToggleButton
+            android:id="@+id/day_of_week_tuesday"
+            style="@style/toggleDaysOfWeek"
+            android:textOff="@string/first_letter_tuesday"
+            android:textOn="@string/first_letter_tuesday"
+            app:layout_constraintEnd_toStartOf="@id/day_of_week_wednesday"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/day_of_week_monday"
+            app:layout_constraintTop_toBottomOf="@id/text_label_calendar" />
+
+        <ToggleButton
+            android:id="@+id/day_of_week_wednesday"
+            style="@style/toggleDaysOfWeek"
+            android:textOff="@string/first_letter_wednesday"
+            android:textOn="@string/first_letter_wednesday"
+            app:layout_constraintEnd_toStartOf="@id/day_of_week_thursday"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/day_of_week_tuesday"
+            app:layout_constraintTop_toBottomOf="@id/text_label_calendar" />
+
+        <ToggleButton
+            android:id="@+id/day_of_week_thursday"
+            style="@style/toggleDaysOfWeek"
+            android:textOff="@string/first_letter_thursday"
+            android:textOn="@string/first_letter_thursday"
+            app:layout_constraintEnd_toStartOf="@id/day_of_week_friday"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/day_of_week_wednesday"
+            app:layout_constraintTop_toBottomOf="@id/text_label_calendar" />
+
+        <ToggleButton
+            android:id="@+id/day_of_week_friday"
+            style="@style/toggleDaysOfWeek"
+            android:textOff="@string/first_letter_friday"
+            android:textOn="@string/first_letter_friday"
+            app:layout_constraintEnd_toStartOf="@id/day_of_week_saturday"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/day_of_week_thursday"
+            app:layout_constraintTop_toBottomOf="@id/text_label_calendar" />
+
+        <ToggleButton
+            android:id="@+id/day_of_week_saturday"
+            style="@style/toggleDaysOfWeek"
+            android:textColor="@color/crimson"
+            android:textOff="@string/first_letter_saturday"
+            android:textOn="@string/first_letter_saturday"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/day_of_week_friday"
+            app:layout_constraintTop_toBottomOf="@id/text_label_calendar" />
+
+        <TextView
+            android:id="@+id/text_label_initial_time"
+            style="@style/styleLabelForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_initial_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/day_of_week_sunday" />
+
+        <TimePicker
+            android:id="@+id/time_initial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_label_initial_time" />
+
+        <Button
+            android:id="@+id/button_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="25dp"
+            android:background="@drawable/button_transparent"
+            android:text="@string/cancel"
+            android:textColor="@color/crimson"
+            android:textSize="@dimen/button_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_confirm"
+            app:layout_constraintTop_toBottomOf="@id/time_initial" />
+
+        <Button
+            android:id="@+id/button_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="25dp"
+            android:background="@drawable/button_border"
+            android:text="@string/confirm"
+            android:textColor="@color/light_background"
+            android:textSize="@dimen/button_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/time_initial" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

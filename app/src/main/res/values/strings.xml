@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">SonecaApp</string>
+    <string name="title_home">Mapa</string>
+    <string name="title_dashboard">Alarmes</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="info_location_permission">Este aplicativo precisa usar a sua localização.</string>
+    <string name="text_enable_localization">Permitir localização</string>
+    <string name="text_places">Lugares</string>
+    <string name="label_title">Título</string>
+    <string name="label_distance">Distância</string>
+    <string name="label_frequency">Frequência</string>
+    <string name="label_day_of_week">Dia da semana</string>
+    <string name="label_initial_time">Horário inicial</string>
+    <string name="label_end_time">Horário final</string>
+    <string name="first_letter_sunday">D</string>
+    <string name="first_letter_monday">S</string>
+    <string name="first_letter_tuesday">T</string>
+    <string name="first_letter_wednesday">Q</string>
+    <string name="first_letter_thursday">Q</string>
+    <string name="first_letter_friday">S</string>
+    <string name="first_letter_saturday">S</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="baseline_notification_add_icon">Notification_add</string>
+</resources>
