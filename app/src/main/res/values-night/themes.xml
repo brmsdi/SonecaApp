@@ -14,7 +14,7 @@
         <item name="android:windowBackground">@color/dark_background</item>
     </style>
     <style name="styleEditText">
-        <item name="android:background">@drawable/rounded_edit_text</item>
+        <item name="android:background">@drawable/rounded_edit_text_dark</item>
         <item name="android:paddingTop">@dimen/padding_edit_text</item>
         <item name="android:paddingBottom">@dimen/padding_edit_text</item>
         <item name="android:paddingStart">@dimen/padding_edit_text_start</item>
@@ -42,5 +42,11 @@
         <item name="android:layout_width">@dimen/icon_width</item>
         <item name="android:layout_height">@dimen/icon_height</item>
         <item name="android:layout_margin">@dimen/icon_margin</item>
+    </style>
+    <style name="buttonStyle">
+        <item name="android:textColor">@color/soft_yellow</item>
+    </style>
+    <style name="cardTextStyle">
+        <item name="android:textColor">@color/light_background</item>
     </style>
 </resources>

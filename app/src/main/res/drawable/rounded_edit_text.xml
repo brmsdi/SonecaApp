@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#212429" /> <!-- Cor de fundo do EditText -->
-    <corners android:radius="30dp" /> <!-- Raio da borda arredondada -->
-    <stroke
-        android:color="#212429"
-        android:width="4dp" />
-</shape>

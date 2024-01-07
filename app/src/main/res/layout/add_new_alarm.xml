@@ -170,12 +170,12 @@
 
         <Button
             android:id="@+id/button_confirm"
+            style="@style/buttonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="25dp"
             android:background="@drawable/button_border"
             android:text="@string/confirm"
-            android:textColor="@color/light_background"
             android:textSize="@dimen/button_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
