@@ -1,5 +1,4 @@
-package com.brmsdi.sonecaapp.data.listeners.dtos
-
+package com.brmsdi.sonecaapp.data.dto
 
 /**
  *

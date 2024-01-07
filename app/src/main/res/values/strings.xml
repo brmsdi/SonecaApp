@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name_label">Soneca</string>
     <string name="app_name">SonecaApp</string>
     <string name="title_home">Mapa</string>
     <string name="title_dashboard">Alarmes</string>
@@ -21,5 +22,26 @@
     <string name="first_letter_saturday">S</string>
     <string name="cancel">Cancelar</string>
     <string name="confirm">Confirmar</string>
+    <string name="msg_error_text_empty">Por favor, preencha todos os campos!</string>
     <string name="baseline_notification_add_icon">Notification_add</string>
+    <string name="msg_error_days_not_selected">Selecione o(s) dia(s) da semana.</string>
+    <string name="ball">Ball</string>
+    <string name="icon_alarm_on">Icone alarme ativado</string>
+    <string name="initial_time">A partir das</string>
+    <string name="days_of_week_alarm">Dias da semana</string>
+    <string name="day_of_week_alarm">Dia da semana</string>
+    <string name="activated">Ativado</string>
+    <string name="distance_current">Distância atual</string>
+    <string name="off">Desligado</string>
+    <string name="no_alarms_scheduled">Nenhum alarme agendado</string>
+    <string name="you_arrived">Você chegou</string>
+    <string-array name="days_of_week_names">
+        <item name="MONDAY">Domingo</item>
+        <item name="SUNDAY">Segunda-feira</item>
+        <item name="TUESDAY">Terça-feira</item>
+        <item name="WEDNESDAY">Quarta-feira</item>
+        <item name="THURSDAY">Quinta-feira</item>
+        <item name="FRIDAY">Sexta-feira</item>
+        <item name="SATURDAY">Sábado</item>
+    </string-array>
 </resources>

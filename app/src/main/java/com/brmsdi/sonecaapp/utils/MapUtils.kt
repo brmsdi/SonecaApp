@@ -1,15 +1,15 @@
 package com.brmsdi.sonecaapp.utils
 
 import android.graphics.Color
-import com.brmsdi.sonecaapp.data.listeners.models.Alarm
-import com.brmsdi.sonecaapp.data.listeners.models.TypeDistance
+import com.brmsdi.sonecaapp.model.Alarm
+import com.brmsdi.sonecaapp.model.AlarmWithDaysOfWeek
+import com.brmsdi.sonecaapp.model.TypeDistance
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-
 
 /**
  *
@@ -18,10 +18,11 @@ import com.google.android.gms.maps.model.MarkerOptions
  */
 class MapUtils {
     companion object {
-        fun addCircle(googleMap: GoogleMap, latLng: LatLng, alarm: Alarm): Circle {
-            var radius = alarm.distance.value.toDouble()
-            val distance = alarm.distance
-            if (distance.typeDistance == TypeDistance.KM) radius = (distance.value * 1000.0)
+        fun addCircle(googleMap: GoogleMap, latLng: LatLng, alarmWithDaysOfWeek: AlarmWithDaysOfWeek): Circle {
+            val distance = alarmWithDaysOfWeek.distance
+            var radius = distance.value.toDouble()
+            val typeDistance = TypeDistance.getForID(distance.typeDistance)
+            if (typeDistance == TypeDistance.KM) radius = (distance.value * 1000.0)
             return googleMap.addCircle(
                 CircleOptions()
                     .center(latLng)

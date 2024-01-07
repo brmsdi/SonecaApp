@@ -14,10 +14,9 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.brmsdi.sonecaapp.BuildConfig
 import com.brmsdi.sonecaapp.R
-import com.brmsdi.sonecaapp.data.listeners.DialogConfirmAndCancelListener
+import com.brmsdi.sonecaapp.data.listener.DialogConfirmAndCancelListener
 import com.brmsdi.sonecaapp.databinding.FragmentMapBinding
 import com.brmsdi.sonecaapp.utils.DialogUtil.Companion.closeDialog
 import com.brmsdi.sonecaapp.utils.DialogUtil.Companion.createDialog
@@ -44,31 +43,33 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import android.widget.CompoundButton.OnCheckedChangeListener
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.MutableLiveData
-import com.brmsdi.sonecaapp.data.listeners.models.Alarm
+import com.brmsdi.sonecaapp.data.dto.CircleWithMarkerDTO
+import com.brmsdi.sonecaapp.model.Alarm
+import com.brmsdi.sonecaapp.model.AlarmWithDaysOfWeek
+import com.brmsdi.sonecaapp.model.Distance
 import com.brmsdi.sonecaapp.utils.ZoomImpl
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MapFragment : Fragment(), OnMapReadyCallback, OnMapClickListener, OnMarkerClickListener,
     OnCircleClickListener {
     private val tag = MapFragment::class.java.simpleName
-    private lateinit var mapViewModel: MapViewModel
     private lateinit var binding: FragmentMapBinding
+    private val mapViewModel by viewModel<MapViewModel>()
     private lateinit var supportMapFragment: SupportMapFragment
     private lateinit var googleMap: GoogleMap
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val fusedLocationClient by inject<FusedLocationProviderClient> ()
     private val placeFields: List<Place.Field> = listOf(Place.Field.NAME)
     private lateinit var placeRequest: FindCurrentPlaceRequest
     private lateinit var placesClient: PlacesClient
-    private val circles = mutableListOf<Circle>()
-    private val markers = mutableListOf<Marker>()
+    private val listCircleWithMarkerDTO = mutableListOf<CircleWithMarkerDTO>()
     private lateinit var dialog: AlertDialog
+    private var clickedLatLng: LatLng? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        mapViewModel =
-            ViewModelProvider(this)[MapViewModel::class.java]
         binding = FragmentMapBinding.inflate(inflater, container, false)
         binding.buttonLocalization.setOnClickListener {
             requestPermission.launch(
@@ -83,7 +84,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnMapClickListener, OnMarker
         placesClient = Places.createClient(this.requireContext())
         supportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         supportMapFragment.getMapAsync(this)
-        observer()
         return binding.root
     }
 
@@ -107,69 +107,124 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnMapClickListener, OnMarker
             )
             return
         }
-        googleMap.setOnMapClickListener(this)
-        googleMap.setOnMarkerClickListener(this)
-        googleMap.setOnCircleClickListener(this)
-        googleMap.isMyLocationEnabled = true
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
-        lastLocation(fusedLocationClient, googleMap)
+        permissionGranted()
         //findCurrentPlace()
     }
 
     override fun onMapClick(latLng: LatLng) {
-        dialog = createDialog(
-            this.requireContext(),
-            latLng,
-            eventDialogConfirmAndCancelListener(),
-            eventOnCheckedChangeListener()
-        )
-        dialog.show()
+        clickedLatLng = latLng
+        mapViewModel.getDataDialog()
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        for ((index, circleList) in circles.withIndex()) {
-            if (marker.position == circleList.center) {
-                circleList.remove()
-                marker.remove()
-                circles.removeAt(index)
-                break
+        listCircleWithMarkerDTO
+            .firstOrNull { it.circle.center == marker.position }
+            ?.let {
+                mapViewModel.delete(it.alarmId)
+                return true
             }
-        }
-        return true
+        return false
     }
 
     override fun onCircleClick(circle: Circle) {
-        for ((index, markerList) in markers.withIndex()) {
-            if (circle.center == markerList.position) {
-                markerList.remove()
-                circle.remove()
-                markers.removeAt(index)
-                break
+        listCircleWithMarkerDTO
+            .firstOrNull { it.circle.center == circle.center }
+            ?.let {
+               mapViewModel.delete(it.alarmId)
+            }
+
+    }
+
+    private fun observer() {
+        mapViewModel.alarmWithDaysOfWeek.observe(this.viewLifecycleOwner) {
+            if (listCircleWithMarkerDTO.isEmpty()) {
+                it.forEach { alarmWithDaysOfWeek ->
+                    fill(alarmWithDaysOfWeek)
+                }
+                return@observe
+            }
+
+            if (it.size < listCircleWithMarkerDTO.size) {
+                val removed =
+                    listCircleWithMarkerDTO.filter { circleWithMarkerDTO -> circleWithMarkerDTO.alarmId !in it.map { alarmWithDaysOfWeek -> alarmWithDaysOfWeek.alarm.alarmId } }
+                if (removed.isNotEmpty())
+                {
+                    removed.forEach {itemRemoved ->
+                        itemRemoved.circle.remove()
+                        itemRemoved.marker.remove()
+                    }
+                    listCircleWithMarkerDTO.removeIf { itemRemove -> itemRemove.alarmId in removed.map { itemRemoved -> itemRemoved.alarmId } }
+                    return@observe
+                }
+            }
+
+            it.last { alarmWithDaysOfWeek ->
+                fill(alarmWithDaysOfWeek)
+                val alarm = alarmWithDaysOfWeek.alarm
+                moveCamera(LatLng(alarm.latitude, alarm.longitude), alarmWithDaysOfWeek.distance)
+                true
+            }
+        }
+
+        mapViewModel.alarmDialogData.observe(this.viewLifecycleOwner) { alarmDialogData ->
+            clickedLatLng?.let {
+                dialog = createDialog(
+                    this.requireContext(),
+                    it,
+                    eventDialogConfirmAndCancelListener(),
+                    eventOnCheckedChangeListener(),
+                    alarmDialogData
+                )
+                dialog.show()
+                clickedLatLng = null
+            }
+        }
+
+        mapViewModel.alarmWithDaysOfWeekSaved.observe(this.viewLifecycleOwner) {
+            if (it != null) {
+                mapViewModel.getAllAlarms()
             }
         }
     }
 
-    private fun observer() {
-        mapViewModel.alarms.observe(this.viewLifecycleOwner) {
-            it.last { alarm ->
-                val latLng = LatLng(alarm.latitude, alarm.longitude)
-                val circle = addCircle(googleMap, LatLng(alarm.latitude, alarm.longitude), alarm)
-                addMarker(circle, latLng, alarm)
-                val zoom = ZoomImpl().generate(latLng, alarm.distance, resources)
-                val cameraPosition = CameraPosition.builder()
-                    .target(latLng)
-                    .zoom(zoom)
-                    .build()
-                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-                true
+    private fun fill(alarmWithDaysOfWeek: AlarmWithDaysOfWeek) {
+        val alarm = alarmWithDaysOfWeek.alarm
+        val latLng = LatLng(alarm.latitude, alarm.longitude)
+        val circle = addCircle(googleMap, LatLng(alarm.latitude, alarm.longitude), alarmWithDaysOfWeek)
+        val marker = addMarker(latLng, alarm)
+        if (marker != null) {
+            alarm.alarmId.let { alarmId ->
+                listCircleWithMarkerDTO.add(CircleWithMarkerDTO(alarmId, circle, marker))
+                return@fill
             }
         }
+        circle.remove()
+    }
+
+    private fun moveCamera(latLng: LatLng, distance: Distance) {
+        val zoom = ZoomImpl().generate(latLng, distance, resources)
+        val cameraPosition = CameraPosition.builder()
+            .target(latLng)
+            .zoom(zoom)
+            .build()
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun permissionGranted() {
+        observer()
+        googleMap.setOnMapClickListener(this)
+        googleMap.setOnMarkerClickListener(this)
+        googleMap.setOnCircleClickListener(this)
+        googleMap.isMyLocationEnabled = true
+        lastLocation(fusedLocationClient, googleMap)
+        mapViewModel.getAllAlarms()
     }
 
     private fun eventDialogConfirmAndCancelListener(): DialogConfirmAndCancelListener {
         return object : DialogConfirmAndCancelListener {
-            override fun confirm(alarm: Alarm) {
-                mapViewModel.newAlarm(MutableLiveData(listOf(alarm)))
+            override fun confirm(alarmWithDaysOfWeek: AlarmWithDaysOfWeek) {
+                mapViewModel.newAlarm(alarmWithDaysOfWeek)
                 closeDialog(dialog)
             }
 
@@ -196,14 +251,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnMapClickListener, OnMarker
         }
     }
 
-    private fun addMarker(circle: Circle, latLng: LatLng, alarm: Alarm) {
-        circle.let {
-            circles.add(circle)
-            val marker = addInfoWindow(googleMap, latLng, alarm.title, "snippet")
-            marker?.let {
-                markers.add(it)
-            }
-        }
+    private fun addMarker(latLng: LatLng, alarm: Alarm): Marker? {
+        return addInfoWindow(googleMap, latLng, alarm.title, "snippet")
     }
 
     private fun lastLocation(
@@ -227,13 +276,16 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnMapClickListener, OnMarker
             )
             return
         }
-        fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-            val cameraPosition = CameraPosition
-                .builder()
-                .zoom(ZOOM_CAMERA)
-                .target(LatLng(it.latitude, it.longitude))
-                .build()
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        fusedLocationProviderClient.lastLocation.addOnCompleteListener {
+            val location = it.result
+            if (location != null) {
+                val cameraPosition = CameraPosition
+                    .builder()
+                    .zoom(ZOOM_CAMERA)
+                    .target(LatLng(location.latitude, location.longitude))
+                    .build()
+                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+            }
         }
     }
 
@@ -291,10 +343,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnMapClickListener, OnMarker
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             if (it[android.Manifest.permission.ACCESS_COARSE_LOCATION] == true || it[android.Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-                googleMap.isMyLocationEnabled = true
-                fusedLocationClient =
-                    LocationServices.getFusedLocationProviderClient(this.requireContext())
-                lastLocation(fusedLocationClient, googleMap)
+                permissionGranted()
                 if (binding.info.visibility == View.VISIBLE) {
                     binding.info.visibility = View.GONE
                     binding.buttonLocalization.visibility = View.GONE
