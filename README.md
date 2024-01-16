@@ -6,4 +6,3 @@
 4. Room framework para persistência de dados
 5. Koin para injeção de dependências
 6. Padrão MVVM
-7. Conceito de LiveData
